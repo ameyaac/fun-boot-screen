@@ -1,3 +1,7 @@
+# Only run on a fresh boot, not sleep/lock resume
+$uptime = (Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
+if ($uptime.TotalMinutes -gt 5) { exit }
+
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Clear-Host
 
@@ -8,7 +12,7 @@ $sw = [System.Diagnostics.Stopwatch]::StartNew()
 while ($sw.Elapsed.TotalSeconds -lt 3) {
   if ([Console]::KeyAvailable) {
     $k = [Console]::ReadKey($true)
-    if ($k.KeyChar -in 's','S') { exit }
+    if ($k.KeyChar -in 's', 'S') { exit }
     break
   }
   Start-Sleep -Milliseconds 60
