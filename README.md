@@ -101,9 +101,17 @@ Paste this block at the very top of the file, before everything else. It enforce
 ```powershell
 # ── BOOT GUARD ──────────────────────────────────────────────
 
-# 1. Only run within 10 minutes of a fresh boot (blocks sleep/lock/resume)
-$uptime = (Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
-if ($uptime.TotalMinutes -gt 10) { exit }
+# 1. Only run on a fresh power-on (works correctly with Fast Startup)
+#    Checks the last Kernel-Boot event (ID 27 or 18) — fires on both
+#    full boot and Fast Startup, but NOT on sleep/resume/lock unlock
+$bootEvent = Get-WinEvent -ProviderName 'Microsoft-Windows-Kernel-Boot' `
+    -MaxEvents 1 -FilterXPath "*[System[EventID=27 or EventID=18]]" `
+    -ErrorAction SilentlyContinue | Select-Object -First 1
+
+if (-not $bootEvent) { exit }  # can't confirm a boot — bail safely
+
+$timeSinceBoot = (Get-Date) - $bootEvent.TimeCreated
+if ($timeSinceBoot.TotalMinutes -gt 10) { exit }
 
 # 2. Only run on AC power — skipped automatically on desktops (no battery)
 $battery = Get-CimInstance Win32_Battery | Select-Object -First 1
@@ -122,7 +130,6 @@ while ($sw.Elapsed.TotalSeconds -lt 3) {
     }
     Start-Sleep -Milliseconds 60
 }
-
 # ────────────────────────────────────────────────────────────
 ```
 
