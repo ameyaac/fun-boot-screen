@@ -30,23 +30,21 @@ All text types out character-by-character with human-like hesitation, punctuatio
 The snapshot collects everything in a single pass for performance, then displays it across sections:
 
 ### Hardware
-
-| Section  | Fields                                                                                                                              |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Overview | Manufacturer, model, CPU name, architecture, cores/threads, max clock, current load, socket, stepping                               |
-| Memory   | Total/used GB, stick count, per-stick: capacity, speed, manufacturer, part number, slot label                                       |
-| GPU      | Name, driver version, VRAM, current resolution, refresh rate, color depth                                                           |
-| Storage  | Physical disks: model, media type, size — Logical drives: free/total GB, usage %                                                    |
-| Network  | Active adapters: name, MAC address, link speed                                                                                      |
-| Misc     | Motherboard, BIOS version + date, battery status (laptops), monitor count, audio devices, USB controllers, optical drives, printers |
+| Section | Fields |
+|---|---|
+| Overview | Manufacturer, model, CPU name, architecture, cores/threads, max clock, current load, socket, stepping |
+| Memory | Total/used GB, stick count, per-stick: capacity, speed, manufacturer, part number, slot label |
+| GPU | Name, driver version, VRAM, current resolution, refresh rate, color depth |
+| Storage | Physical disks: model, media type, size — Logical drives: free/total GB, usage % |
+| Network | Active adapters: name, MAC address, link speed |
+| Misc | Motherboard, BIOS version + date, battery status (laptops), monitor count, audio devices, USB controllers, optical drives, printers |
 
 ### Session
-
-| Section  | Fields                                                                                                                              |
-| -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Identity | Username, machine name, domain                                                                                                      |
-| OS       | Caption, architecture, build number, version, locale, last boot timestamp                                                           |
-| Runtime  | PowerShell version, .NET CLR version, timezone                                                                                      |
+| Section | Fields |
+|---|---|
+| Identity | Username, machine name, domain |
+| OS | Caption, architecture, build number, version, locale, last boot timestamp |
+| Runtime | PowerShell version, .NET CLR version, timezone |
 | Activity | Process count, services running/stopped, driver count, startup app count, installed hotfixes, PATH entry count, installed app count |
 
 ### Software Versions (auto-detected)
@@ -82,7 +80,21 @@ Save `daily-command-center.ps1` somewhere permanent, for example:
 C:\Users\YourName\Scripts\daily-command-center.ps1
 ```
 
-### Step 2 — Add the boot guard to the top of the script
+### Step 2 — Run it manually to test
+
+Before setting anything up, run the script once from a PowerShell window to make sure it works on your machine:
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -NoProfile -File "C:\Users\YourName\Scripts\daily-command-center.ps1"
+```
+
+The full sequence should play out — fake loader, boot phases, and the system snapshot at the end. Press any key when it prompts you to dismiss the window.
+
+> **You can stop here if you want.** If you're happy running it manually whenever you feel like it, no further setup is needed. The steps below are only for auto-loading it on every boot.
+
+***
+
+### Step 3 — Add the boot guard to the top of the script
 
 Paste this block at the very top of the file, before everything else. It enforces three conditions before the sequence runs:
 
@@ -114,7 +126,7 @@ while ($sw.Elapsed.TotalSeconds -lt 3) {
 # ────────────────────────────────────────────────────────────
 ```
 
-### Step 3 — Add the exit gate to the bottom of the script
+### Step 4 — Add the exit gate to the bottom of the script
 
 Paste this after the final `BootSequence` call so it waits for you to dismiss the window:
 
@@ -126,7 +138,7 @@ $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
 exit
 ```
 
-### Step 4 — Set up Task Scheduler
+### Step 5 — Set up Task Scheduler
 
 Open **Task Scheduler** and create a new task with these settings:
 
@@ -164,7 +176,7 @@ Open **Task Scheduler** and create a new task with these settings:
 - ☐ Run task as soon as possible after a scheduled start is missed — leave OFF (prevents it firing on sleep resume)
 - If the task is already running: `Do not start a new instance`
 
-### Step 5 — Set execution policy (if needed)
+### Step 6 — Set execution policy (if needed)
 
 If PowerShell blocks the script, run this once in an admin terminal:
 
@@ -176,13 +188,13 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ## Skipping It
 
-| Method                 | How                                                |
-| ---------------------- | -------------------------------------------------- |
-| **On the day**         | Press `S` within 3 seconds of the window appearing |
-| **Mid-run**            | `Ctrl+C` — always works                            |
-| **Close the window**   | `Alt+F4` or click X                                |
-| **On battery**         | Exits silently before anything shows (by design)   |
-| **After sleep/resume** | Exits silently — uptime check blocks it            |
+| Method | How |
+|---|---|
+| **On the day** | Press `S` within 3 seconds of the window appearing |
+| **Mid-run** | `Ctrl+C` — always works |
+| **Close the window** | `Alt+F4` or click X |
+| **On battery** | Exits silently before anything shows (by design) |
+| **After sleep/resume** | Exits silently — uptime check blocks it |
 
 ---
 
@@ -190,18 +202,18 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 All content pools are plain PowerShell arrays at the top of the script — easy to edit:
 
-| Variable            | What it controls                       |
-| ------------------- | -------------------------------------- |
-| `$Phrases`          | ~90 chaos loader phrases during warmup |
-| `$OkMessages`       | 17 `[OK]` variants after each loader   |
-| `$WarningMessages`  | Occasional `[WARN]` messages           |
-| `$ErrorRecoveries`  | Rare `[ERR->OK]` dramatic recoveries   |
-| `$Quotes`           | Motivational reminders                 |
-| `$Horoscopes`       | Dev horoscopes                         |
-| `$Missions`         | Daily missions                         |
-| `$FunEvents`        | Random event callouts during warmup    |
-| `$FunStatuses`      | Status pulses between phases           |
-| `$ExtremeFunEvents` | Clearly-labeled joke extreme events    |
+| Variable | What it controls |
+|---|---|
+| `$Phrases` | ~90 chaos loader phrases during warmup |
+| `$OkMessages` | 17 `[OK]` variants after each loader |
+| `$WarningMessages` | Occasional `[WARN]` messages |
+| `$ErrorRecoveries` | Rare `[ERR->OK]` dramatic recoveries |
+| `$Quotes` | Motivational reminders |
+| `$Horoscopes` | Dev horoscopes |
+| `$Missions` | Daily missions |
+| `$FunEvents` | Random event callouts during warmup |
+| `$FunStatuses` | Status pulses between phases |
+| `$ExtremeFunEvents` | Clearly-labeled joke extreme events |
 
 **Timing** is controlled by the `TypeLine` function's `$minDelay`/`$maxDelay` parameters (in milliseconds) and the `Pause` calls between sections. Lower values = faster boot experience.
 
