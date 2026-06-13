@@ -2,6 +2,13 @@
 $uptime = (Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
 if ($uptime.TotalMinutes -gt 5) { exit }
 
+# Only run on AC power
+$battery = Get-CimInstance Win32_Battery | Select-Object -First 1
+if ($battery -and $battery.BatteryStatus -ne 2) {
+  # BatteryStatus 2 = AC power connected
+  exit
+}
+
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Clear-Host
 
