@@ -76,10 +76,10 @@ Animated bars for: CPU load (real), memory pressure (real), disk usage (real), d
 
 ### Step 1 — Save the script
 
-Save `boot.ps1` somewhere permanent, for example:
+Save `daily-command-center.ps1` somewhere permanent, for example:
 
 ```
-C:\Users\YourName\Scripts\boot.ps1
+C:\Users\YourName\Scripts\daily-command-center.ps1
 ```
 
 ### Step 2 — Add the boot guard to the top of the script
@@ -148,7 +148,7 @@ Open **Task Scheduler** and create a new task with these settings:
 - Program: `powershell.exe`
 - Arguments:
   ```
-  -ExecutionPolicy Bypass -NoProfile -WindowStyle Normal -File "C:\Users\YourName\Scripts\boot.ps1"
+  -ExecutionPolicy Bypass -NoProfile -WindowStyle Normal -File "C:\Users\YourName\Scripts\daily-command-center.ps1"
   ```
 - Replace the path with your actual script location
 
