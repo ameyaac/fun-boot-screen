@@ -1,11 +1,18 @@
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 Clear-Host
 
-# ─── SKIP GATE ─────────────────────────────────────────
 Write-Host ""
-Write-Host "  Press [ENTER] to boot...  or  [S] to skip." -ForegroundColor DarkGray
+Write-Host "  starting in 3 seconds...  press [S] to skip." -ForegroundColor DarkGray
 Write-Host ""
-Clear-Host
+$sw = [System.Diagnostics.Stopwatch]::StartNew()
+while ($sw.Elapsed.TotalSeconds -lt 3) {
+  if ([Console]::KeyAvailable) {
+    $k = [Console]::ReadKey($true)
+    if ($k.KeyChar -in 's','S') { exit }
+    break
+  }
+  Start-Sleep -Milliseconds 60
+}
 
 $key = $null
 $sw = [System.Diagnostics.Stopwatch]::StartNew()
