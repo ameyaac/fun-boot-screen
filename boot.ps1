@@ -962,3 +962,9 @@ function FakeFullscreen {
 
 FakeFullscreen
 BootSequence
+
+Write-Host ""
+Write-Host "  [ press ENTER to dismiss ]" -ForegroundColor DarkGray
+Write-Host ""
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+exit
